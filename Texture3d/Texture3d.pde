@@ -3,14 +3,17 @@ color black = #000000;
 color white = #FFFFFF;
 
 boolean up, down, left,right;
+final int gridSize = 10;
+PVector direction = new PVector(0,-10);
+PVector direction90 = new PVector(10,0);
+float lx = 0,ly = height/2 + 300, lz =0;
+float headAngle = 0.01;
 
-float lx = 0,ly = 0, lz = 0;
 PImage dT;
 PImage dS;
 PImage dB;
 PImage map;
 float rotX, rotY,rotZ;
-final int gridSize = 10;
 void setup(){
   size(800,800,P3D);
   dT = loadImage("dirt_top.jpg");
@@ -22,19 +25,37 @@ void setup(){
 
 void draw(){
   background(255);
-  camera(lx,ly,lz,0,0,-1,0,1,0);
-  if(up)lz -= 10;
-  if(down)lz += 10;
-  
+  camera(lx,ly,lz,direction.x + lx,ly,direction.y + lz,0,1,0);
+  direction.rotate(headAngle);
+  headAngle= -(pmouseX - mouseX) * 0.01;
+  direction90 = direction.copy();
+  direction90.rotate(PI/2);
+  if(up){
+    lx += direction.x;
+    lz += direction.y;
+  }
+  if(down){
+    lz -= direction.y;
+    lx -= direction.x;
+  }
+  if(right){
+    lx += direction90.x;
+    lz += direction90.y;  
+  }
+  if(left){
+    lx -= direction90.x;
+    lz -= direction90.y;
+  }
   //pushMatrix();
   //rotateX(rotX);
   //rotateY(rotY);
-  drawMap(map);
+  drawMap();
   stroke(50);
+  strokeWeight(1);
   drawGround();
   //popMatrix();
 }
-void drawMap(PImage map){
+void drawMap(){
   int mapX = 0, mapY = 0;
   int worldX = 0, worldY = height/2, worldZ = 0;
   
@@ -53,14 +74,15 @@ void drawMap(PImage map){
   }
 }
 void drawGround(){
-  int x = gridSize;
+  int x = 0;
+  int y = height/2 + gridSize;
   while(x<map.width*gridSize){
-  line(x,height/2 + gridSize, 0,x,height/2 + gridSize,map.height*gridSize-gridSize);
+  line(x,y, 0,x,y,map.height*gridSize);
   x=x+gridSize * 2;
   }
   int z = 0;
   while(z < map.height*gridSize){
-    line(0,height/2 + gridSize,z,map.width*gridSize - gridSize,height/2 + gridSize,z);
+    line(0,y,z,map.width*gridSize,y,z);
     z+=gridSize * 2;
   }
 }
