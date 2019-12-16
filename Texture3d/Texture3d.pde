@@ -2,13 +2,14 @@
 color black = #000000;
 color white = #FFFFFF;
 
-boolean up, down, left,right;
+boolean up, down, left,right,space;
 final int gridSize = 10;
 PVector direction = new PVector(0,-10);
 PVector direction90 = new PVector(10,0);
-float lx = 0,ly = height/2 + 300, lz =0;
+float lx = 0,ly = height/2 + 325, lz =0;
 float headAngle = 0.01;
-
+ArrayList<Bullet> bullets;
+ArrayList<GameObject> particles;
 PImage dT;
 PImage dS;
 PImage dB;
@@ -21,10 +22,12 @@ void setup(){
   dB = loadImage("dirt_bottom.jpg");
   map = loadImage("map.png");
   textureMode(NORMAL);
+  bullets = new ArrayList<Bullet>();
+  particles = new ArrayList<GameObject>();
 }
 
 void draw(){
-  background(255);
+  background(0);
   camera(lx,ly,lz,direction.x + lx,ly,direction.y + lz,0,1,0);
   direction.rotate(headAngle);
   headAngle= -(pmouseX - mouseX) * 0.01;
@@ -46,6 +49,9 @@ void draw(){
     lx -= direction90.x;
     lz -= direction90.y;
   }
+  if(space){
+    particles.add(new firework(250,375,250,0,-10,0,true,5));
+  }
   //pushMatrix();
   //rotateX(rotX);
   //rotateY(rotY);
@@ -54,6 +60,38 @@ void draw(){
   strokeWeight(1);
   drawGround();
   //popMatrix();
+  int i = 0;
+  while(i<bullets.size()){
+    Bullet b = bullets.get(i);
+    b.show();
+    b.act();
+    i++;
+  }
+    particles.add(new rain(random(0,500),100f,random(0,500),0.001,0,0.001,3));
+  int j=0;
+  while(j<particles.size()){
+    GameObject object = particles.get(j);
+    if(object.life == 0){
+      if(object instanceof rain){
+      particles.add(new ripple(object.pos,#0086ad));
+      }
+      if(object instanceof firework){
+        firework f = (firework)object;
+         if(f.explode){
+      for(int k = 0;i<10;i++){
+      particles.add(new firework(object.pos.x,object.pos.y,object.pos.z,random(-10,10),random(-10,10),random(-10,10),false,5));
+        }
+      }
+      }
+      particles.remove(j);
+    }else{
+    object.show();
+    object.act();
+    j++;  
+  }
+    
+  }
+
 }
 void drawMap(){
   int mapX = 0, mapY = 0;
@@ -135,8 +173,8 @@ void textureBox(PImage top, PImage side, PImage bottom, float x, float y, float 
 }
 
 void mouseDragged(){
-  rotX = rotX + (pmouseY - mouseY) * 0.01;
-  rotY = rotY + (pmouseX - mouseX) * 0.01;
+  //rotX = rotX + (pmouseY - mouseY) * 0.01;
+  //rotY = rotY + (pmouseX - mouseX) * 0.01;
 }
 
 void keyPressed(){
@@ -144,6 +182,7 @@ void keyPressed(){
   if(keyCode == DOWN)down = true;
   if(keyCode == LEFT)left = true;
   if(keyCode == RIGHT)right = true;
+  if(key ==' ')space = true;
 }
 
 void keyReleased(){
@@ -151,4 +190,9 @@ void keyReleased(){
   if(keyCode == DOWN)down = false;
   if(keyCode == LEFT)left = false;
   if(keyCode == RIGHT)right = false;
+  if(key == ' ')space = false;
+}
+
+void mouseClicked(){
+  bullets.add(new Bullet(lx,lz,direction.x * 5,direction.y * 5));
 }
