@@ -15,6 +15,7 @@ PImage dS;
 PImage dB;
 PImage map;
 float rotX, rotY,rotZ;
+tree t;
 void setup(){
   size(800,800,P3D);
   dT = loadImage("dirt_top.jpg");
@@ -79,7 +80,7 @@ void draw(){
         firework f = (firework)object;
          if(f.explode){
       for(int k = 0;i<10;i++){
-      particles.add(new firework(object.pos.x,object.pos.y,object.pos.z,random(-10,10),random(-10,10),random(-10,10),false,5));
+      particles.add(new firework(object.pos.x,object.pos.y,object.pos.z,random(-8,8),random(-5,5),random(-8,8),false,5));
         }
       }
       }
@@ -91,7 +92,7 @@ void draw(){
   }
     
   }
-
+  particles.add(new tree(250,375,250,100));
 }
 void drawMap(){
   int mapX = 0, mapY = 0;

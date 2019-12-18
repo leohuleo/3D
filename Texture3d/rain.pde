@@ -11,7 +11,7 @@ class rain extends GameObject{
     translate(pos.x,pos.y,pos.z);
     fill(#0086ad);
     noStroke();
-    box(size);
+    box(1,10,1);
     popMatrix();
   }
   
